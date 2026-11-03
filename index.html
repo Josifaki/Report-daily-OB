@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Daily Report OB</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="brand">
+      <span class="brand-icon">🧹</span>
+      <h2 class="brand-title">Daily Report OB</h2>
+    </div>
+
+    <ul class="sidebar-menu">
+      <li>
+        <button class="menu-item active" id="menuCreateReport">
+          <span>➕</span>
+          <span>Buat Laporan</span>
+        </button>
+      </li>
+      <li>
+        <button class="menu-item" id="menuHistoryReport">
+          <span>📄</span>
+          <span>Riwayat Laporan</span>
+        </button>
+      </li>
+    </ul>
+  </aside>
+
+  <!-- MAIN WRAPPER -->
+  <div class="main-wrapper">
+    
+    <!-- TOPBAR -->
+    <header class="topbar">
+      <div class="user-profile" title="Petugas OB Aktif">
+        <div class="avatar-circle">👤</div>
+        <span>OB01</span>
+        <span style="font-size: 0.75rem; color: #94a3b8;">▼</span>
+      </div>
+    </header>
+
+    <!-- CONTENT: BUAT DAILY REPORT -->
+    <main class="content-container" id="createReportView">
+      <h1 class="page-title">Buat Daily Report</h1>
+
+      <!-- TANGGAL SELECTION -->
+      <div class="date-section">
+        <label for="reportDate" class="date-label">Tanggal</label>
+        <div class="date-input-wrapper">
+          <span>📅</span>
+          <input type="date" id="reportDate" required>
+        </div>
+      </div>
+
+      <!-- MAIN FORM CARD -->
+      <div class="report-card">
+        <form id="dailyReportForm">
+          
+          <!-- TABLE TUGAS -->
+          <table class="task-table">
+            <thead>
+              <tr>
+                <th class="th-no">No</th>
+                <th class="th-job">Jenis Pekerjaan</th>
+                <th class="th-time">Jam Mulai</th>
+                <th class="th-time">Jam Selesai</th>
+                <th class="th-action">Aksi</th>
+              </tr>
+            </thead>
+            <tbody id="taskRowsContainer">
+              <!-- Baris pekerjaan digenerate secara dinamis oleh JavaScript -->
+            </tbody>
+          </table>
+
+          <!-- TOMBOL TAMBAH PEKERJAAN -->
+          <button type="button" class="btn-add-job" id="btnAddRow">
+            <span>➕</span> Tambah Pekerjaan
+          </button>
+
+          <!-- CATATAN SECTION -->
+          <div class="notes-section">
+            <label for="reportNotes" class="notes-label">Catatan (Opsional)</label>
+            <textarea id="reportNotes" class="notes-textarea" placeholder="Tulis catatan jika ada..."></textarea>
+          </div>
+
+          <!-- SUBMIT ACTION -->
+          <div class="action-row">
+            <button type="submit" class="btn-submit" id="btnSubmitReport">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="22" y1="2" x2="11" y2="13"></line>
+                <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+              </svg>
+              <span>Simpan Laporan</span>
+            </button>
+          </div>
+
+        </form>
+      </div>
+    </main>
+
+    <!-- CONTENT: RIWAYAT LAPORAN -->
+    <main class="content-container history-view" id="historyReportView">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+        <h1 class="page-title" style="margin-bottom: 0;">Riwayat Laporan Harian</h1>
+        <button class="btn-add-job" id="btnExportAllCsv" style="margin: 0;">
+          📥 Download Semua (CSV)
+        </button>
+      </div>
+
+      <div id="historyListContainer">
+        <!-- List riwayat laporan dari localStorage -->
+      </div>
+    </main>
+
+  </div>
+
+  <!-- TOAST NOTIFIKASI -->
+  <div class="toast" id="toastNotification">
+    <span>✅</span>
+    <span id="toastMessage">Laporan berhasil disimpan!</span>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
