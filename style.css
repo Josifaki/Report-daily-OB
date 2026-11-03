@@ -418,6 +418,16 @@ body {
   box-shadow: 0 6px 16px rgba(37, 99, 235, 0.4);
 }
 
+.btn-submit:disabled,
+.btn-submit[disabled] {
+  background-color: #cbd5e1 !important;
+  color: #94a3b8 !important;
+  cursor: not-allowed !important;
+  box-shadow: none !important;
+  transform: none !important;
+  opacity: 0.85;
+}
+
 /* RIWAYAT LAPORAN VIEW */
 .history-view {
   display: none;

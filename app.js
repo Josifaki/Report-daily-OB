@@ -4,6 +4,7 @@ const btnAddRow = document.getElementById('btnAddRow');
 const dailyReportForm = document.getElementById('dailyReportForm');
 const reportDate = document.getElementById('reportDate');
 const reportNotes = document.getElementById('reportNotes');
+const btnSubmitReport = document.getElementById('btnSubmitReport');
 
 // Navigation
 const menuCreateReport = document.getElementById('menuCreateReport');
@@ -20,6 +21,7 @@ document.addEventListener('DOMContentLoaded', () => {
   setTodayDate();
   loadInitialRows();
   setupEventListeners();
+  updateSubmitButtonState();
 });
 
 // Helper: Convert "HH:MM" string to total minutes from midnight
@@ -47,15 +49,14 @@ function setTodayDate() {
   reportDate.value = `${yyyy}-${mm}-${dd}`;
 }
 
-// Load default 2 rows with sequential times
+// Load default initial rows
 function loadInitialRows() {
   taskRowsContainer.innerHTML = '';
-  // Data pertama: 08:00 sampai 10:30
+  // Baris pertama (contoh kosong untuk diisi user)
   createTaskRow('Contoh: Bersih-bersih lobby', '08:00', '10:30', false);
-  // Data kedua: Mulai 10:30 (atau setelah jam selesai data pertama) sampai 11:15
-  createTaskRow('Contoh: Cek dan isi ulang sabun', '10:30', '11:15', false);
   updateRowNumbers();
   validateAndSyncTimes();
+  updateSubmitButtonState();
 }
 
 // Create a single task row
@@ -99,11 +100,13 @@ function createTaskRow(jobPlaceholder = 'Contoh: Bersihkan ruangan', startTime =
   startTimeInput.addEventListener('input', () => {
     handleStartTimeChange(tr);
     validateAndSyncTimes();
+    updateSubmitButtonState();
   });
 
   endTimeInput.addEventListener('input', () => {
     handleEndTimeChange(tr);
     validateAndSyncTimes();
+    updateSubmitButtonState();
   });
 
   // Delete row event
@@ -117,11 +120,13 @@ function createTaskRow(jobPlaceholder = 'Contoh: Bersihkan ruangan', startTime =
     tr.remove();
     updateRowNumbers();
     validateAndSyncTimes();
+    updateSubmitButtonState();
   });
 
   taskRowsContainer.appendChild(tr);
   updateRowNumbers();
   validateAndSyncTimes();
+  updateSubmitButtonState();
 }
 
 // When Jam Mulai of a row is changed
@@ -219,6 +224,55 @@ function validateAndSyncTimes() {
   return allValid;
 }
 
+// REAL-TIME CHECK: Update submit button enabled/disabled state
+function updateSubmitButtonState() {
+  const btn = document.getElementById('btnSubmitReport');
+  if (!btn) return;
+
+  const dateValue = reportDate ? reportDate.value : '';
+  if (!dateValue) {
+    btn.disabled = true;
+    btn.title = 'Pilih tanggal terlebih dahulu';
+    return;
+  }
+
+  const rows = taskRowsContainer.querySelectorAll('.task-row');
+  if (rows.length === 0) {
+    btn.disabled = true;
+    btn.title = 'Tambahkan minimal 1 pekerjaan';
+    return;
+  }
+
+  // Check sequence validity
+  const isTimeValid = validateAndSyncTimes();
+  if (!isTimeValid) {
+    btn.disabled = true;
+    btn.title = 'Perbaiki urutan jam yang tidak sesuai terlebih dahulu';
+    return;
+  }
+
+  // Check if each row has job description, start time, and end time filled
+  for (let i = 0; i < rows.length; i++) {
+    const jobInput = rows[i].querySelector('.input-job');
+    const startInput = rows[i].querySelector('.start-time');
+    const endInput = rows[i].querySelector('.end-time');
+
+    const job = jobInput ? jobInput.value.trim() : '';
+    const start = startInput ? startInput.value : '';
+    const end = endInput ? endInput.value : '';
+
+    if (!job || !start || !end) {
+      btn.disabled = true;
+      btn.title = `Lengkapi jenis pekerjaan dan jam pada baris #${i + 1} untuk menyimpan`;
+      return;
+    }
+  }
+
+  // All filled and valid!
+  btn.disabled = false;
+  btn.title = 'Simpan Laporan';
+}
+
 // Update row numbers (1, 2, 3...)
 function updateRowNumbers() {
   const rows = taskRowsContainer.querySelectorAll('.task-row');
@@ -242,14 +296,23 @@ function setupEventListeners() {
       const lastRow = rows[rows.length - 1];
       const lastEndInput = lastRow.querySelector('.end-time');
       if (lastEndInput && lastEndInput.value) {
-        // Ambil jam selesai baris terakhir sebagai jam mulai baris baru
         defaultStart = lastEndInput.value;
         const startMins = timeToMinutes(defaultStart);
         defaultEnd = minutesToTime(startMins + 30);
       }
     }
 
-    createTaskRow('Contoh: Pel lorong lantai 2', defaultStart, defaultEnd, false);
+    createTaskRow('Tulis jenis pekerjaan di sini...', defaultStart, defaultEnd, false);
+    updateSubmitButtonState();
+  });
+
+  // Listen to inputs throughout the form to live-toggle the submit button
+  dailyReportForm.addEventListener('input', () => {
+    updateSubmitButtonState();
+  });
+
+  dailyReportForm.addEventListener('change', () => {
+    updateSubmitButtonState();
   });
 
   // Submit report form
